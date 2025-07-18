@@ -2,31 +2,35 @@ const userModel = require("../models/userModel")
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const jwt = require("jsonwebtoken");
 const { UsertokenGenerator } = require("../utils/token");
+const { registerSchema } = require("../validators/authvalidations");
 
 const authController = {};
 
 authController.signupPost = async (req, res) => {
 
   try {
-    //   const parsed = registerSchema.safeParse(req.body);
-    //   if (!parsed.success) {
-    //     const firstError = parsed.error.errors[0].message;
-    //     return res.status(400).json({ message: firstError });
-    //   }
+    const parsed = registerSchema.safeParse(req.body);
 
-    const { bq_id, name, email, password, phone, CNIC, course } = req.body;
+    if (!parsed.success) {
+      const error = parsed.error?.errors?.[0];
+      if (error) {
+        return res.status(400).json({ field: error.path.join('.'), message: error.message });
+      }
+      return res.status(400).json({ message: 'Invalid input.' });
+    }
+
+    const { bq_id, name, email, password, phone, CNIC, course } = parsed.data;
+
+    const existingbq_id = await userModel.findOne({ bq_id });
+    if (existingbq_id) {
+      return res.status(400).json({ message: 'This BQ Id is not available, please try another' });
+    }
 
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'This Email is Already Registered' });
     }
-
-    //   const existingUsername = await userModel.findOne({ username });
-    //   if (existingUsername) {
-    //     return res.status(400).json({ message: 'This Username is not available, please try another' });
-    //   }
 
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
