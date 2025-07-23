@@ -8,31 +8,31 @@ const authController = {};
 
 authController.signupPost = async (req, res) => {
   try {
-    
-
     const parsed = registerSchema.safeParse(req.body);
 
     if (!parsed.success) {
-      if (Array.isArray(parsed.error.errors) && parsed.error.errors.length > 0) {
-        const firstError = parsed.error.errors[0];
-        return res.status(400).json({
-          field: firstError.path[0],
-          message: firstError.message,
-        });
-      }
-
+      const firstError = parsed.error.issues?.[0]; 
+      return res.status(400).json({
+        field: firstError?.path?.[0] || null,
+        message: parsed.error.issues[0].message || "Invalid input"
+      });
     }
-
-    const { bq_id, name, email, password, phone, CNIC, course } = parsed.data;
+    const { bq_id, name, email, password, phone, CNIC, course } = parsed.data
 
     const existingbq_id = await userModel.findOne({ bq_id });
     if (existingbq_id) {
-      return res.status(400).json({ message: 'This BQ Id is not available, please try another' });
+      return res.status(400).json({
+        field: "bq_id",
+        message: "This BQ Id is not available, please try another"
+      });
     }
 
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'This Email is Already Registered' });
+      return res.status(400).json({
+        field: "email",
+        message: "This Email is Already Registered"
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -42,10 +42,11 @@ authController.signupPost = async (req, res) => {
 
     return res.status(200).json({ message: "Account created successfully" });
   } catch (error) {
-    console.error('Error creating user:', error);
-    return res.status(500).json({ message: 'Server Error' });
+    console.error("Error creating user:", error);
+    return res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 authController.signupGet = async (req, res) => {
   try {
@@ -82,6 +83,41 @@ authController.logout = async (req, res) => {
   } catch (error) {
     console.error('Error logging out:', error);
     res.status(500).json({ message: 'Server Error' });
+  }
+}
+
+authController.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid Email' });
+    }
+  } catch (error) {
+    console.error('Error sending reset password email:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+}
+
+authController.resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successful!" });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 }
 
