@@ -1,7 +1,7 @@
 const { z } = require('zod');
 
 const registerSchema = z.object({
-  bq_id: z.string().min(6, 'BQ ID must be at least 6 characters'),
+  bq_id: z.string().min(5, 'BQ ID must be at least 5 characters'),
   name: z.string().min(3, 'Name is too short'),
   email: z.string().email('Invalid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),

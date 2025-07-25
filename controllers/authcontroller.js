@@ -11,7 +11,7 @@ authController.signupPost = async (req, res) => {
     const parsed = registerSchema.safeParse(req.body);
 
     if (!parsed.success) {
-      const firstError = parsed.error.issues?.[0]; 
+      const firstError = parsed.error.issues?.[0];
       return res.status(400).json({
         field: firstError?.path?.[0] || null,
         message: parsed.error.issues[0].message || "Invalid input"
@@ -86,38 +86,26 @@ authController.logout = async (req, res) => {
   }
 }
 
-authController.forgotPassword = async (req, res) => {
+authController.updateUser = async (req, res) => {
   try {
-    const { email } = req.body;
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid Email' });
-    }
+    const { _id } = req.params;
+    const { bq_id, name, email, phone, CNIC, course } = req.body;
+    await userModel.findByIdAndUpdate(_id, { bq_id, name, email, phone, CNIC, course });
+    res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
-    console.error('Error sending reset password email:', error);
+    console.error('Error updating user:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 }
 
-authController.resetPassword = async (req, res) => {
-  const { email, newPassword } = req.body;
-
+authController.deleteUser = async (req, res) => {
   try {
-    const user = await userModel.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    user.password = hashedPassword;
-    await user.save();
-
-    res.status(200).json({ message: "Password reset successful!" });
+    const { _id } = req.params;
+    await userModel.findByIdAndDelete(_id);
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error("Password reset error:", error);
-    res.status(500).json({ message: "Server error", error });
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Server Error' });
   }
 }
 
