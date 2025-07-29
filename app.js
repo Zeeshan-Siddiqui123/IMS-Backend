@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const userRoute = require("./routes/userRoute");
+const indexRoute = require("./routes/indexRoute");
 require("dotenv").config();
 require("./config/db")();
 
@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
   res.send("Hello, I am a Server");
 });
 
-app.use("/user", userRoute);
+app.use("/", indexRoute);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
