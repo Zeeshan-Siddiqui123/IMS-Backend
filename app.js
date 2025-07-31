@@ -3,8 +3,12 @@ const cors = require("cors");
 const indexRoute = require("./routes/indexRoute");
 require("dotenv").config();
 require("./config/db")();
+const path = require('path');
+
+
 
 const app = express();
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 app.use(cors({
   origin: [process.env.FRONTEND_URL, process.env.LOCALHOST_URL],
