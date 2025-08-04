@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authcontroller")
 
+
+//admin access users
 router.get("/signup", authController.signupGet)
 router.post("/signup", authController.signupPost)
 router.post("/login", authController.loginPost)
