@@ -1,22 +1,14 @@
 const userModel = require("../models/userModel")
 const bcrypt = require("bcrypt");
 const { UsertokenGenerator } = require("../utils/token");
-const { registerSchema } = require("../validators/authvalidations");
+
 
 
 const authController = {};
 
 authController.signupPost = async (req, res) => {
   try {
-    const parsed = registerSchema.safeParse(req.body);
-
-    if (!parsed.success) {
-      const firstError = parsed.error.issues?.[0];
-      return res.status(400).json({
-        field: firstError?.path?.[0] || null,
-        message: parsed.error.issues[0].message || "Invalid input"
-      });
-    }
+   
     const { bq_id, name, email, password, phone, CNIC, course } = parsed.data
 
     const existingbq_id = await userModel.findOne({ bq_id });

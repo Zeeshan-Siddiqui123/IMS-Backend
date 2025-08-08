@@ -1,8 +1,9 @@
-import { z } from "zod";
+const z = require("zod")
 
-export const teamSchema = z.object({
+const TeamSchema = z.object({
   teamName: z.string().min(1, "Team name is required"),
-  description: z.string().optional(),
   teamLeader: z.string().min(1, "Team leader name is required"),
   members: z.array(z.string()).optional(),
 });
+
+module.exports = { TeamSchema };
