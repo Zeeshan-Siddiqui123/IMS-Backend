@@ -2,9 +2,15 @@ const Team = require('../models/teamModel')
 const User = require("../models/userModel")
 TeamController = {}
 
-// TeamController.teamGet = (req , res) => {
-//     pass
-// }
+TeamController.teamGet = async (req , res) => {
+  try {
+    // const teams = await Team.find()
+    const teams = await Team.find().populate("members", "name")
+    res.json(teams)
+  } catch (error) {
+    res.status(500).json({ message: 'Error Fetching Teams', error })
+  }
+}
 
 TeamController.createteamPost = async (req, res) => {
     try {
