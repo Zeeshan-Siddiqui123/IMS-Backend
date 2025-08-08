@@ -47,7 +47,6 @@ authController.signupPost = async (req, res) => {
   }
 };
 
-
 authController.signupGet = async (req, res) => {
   try {
     const users = await userModel.find()

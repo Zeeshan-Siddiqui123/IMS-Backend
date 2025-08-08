@@ -43,7 +43,7 @@ postController.updatePost = async (req, res) => {
       imagePath = `/images/${req.file.filename}`;
 
       // Delete old image if exists and not same as default
-      if (existingImage && fs.existsSync(path.join(__dirname, `../public${existingImage}`))) {
+      if (existingImage && fs.existsSync(path.join(__dirname, `../public${existingImage}`) )) {
         fs.unlinkSync(path.join(__dirname, `../public${existingImage}`));
       }
     }
