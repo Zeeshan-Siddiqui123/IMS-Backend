@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const teamSchema = new mongoose.Schema(
   {
@@ -8,21 +8,28 @@ const teamSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    description: {
-      type: String,
-      default: "",
-    },
+    // description: {
+    //   type: String,
+    //   default: "",
+    // },
     teamLeader: {
       type: String,
       required: [true, "Team leader name is required"],
       trim: true,
     },
-    members: {
-      type: [String], 
-      default: [],
-    },
+    members: [{
+      type: mongoose.Schema.Types.ObjectId,
+        ref:"user"
+    }],
+
+    field : {
+      type : String,
+      enum : ["Web Dev" , "Graphics" , "Marketing"],
+      required : true
+    }
+
   },
   { timestamps: true }
 );
 
-modules.exports = mongoose.model("team", teamSchema);
+module.exports = mongoose.model('team', teamSchema);
