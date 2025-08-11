@@ -17,7 +17,7 @@ TeamController.teamGet = async (req, res) => {
 TeamController.createteamPost = async (req, res) => {
   try {
     const { teamName, teamLeader, members } = req.validatedData;
-
+    console.log(req.validatedData.members);
     const { field } = req.body;
 
     const existingTeam = await Team.findOne({ teamName });
@@ -31,6 +31,8 @@ TeamController.createteamPost = async (req, res) => {
     let members_id = Array.isArray(members)
       ? members
       : (members ? [members] : []);
+      console.log(members_id);
+      
 
     const validMembers = await User.find({ _id: { $in: members_id } });
     members_id = validMembers.map(user => user._id);
