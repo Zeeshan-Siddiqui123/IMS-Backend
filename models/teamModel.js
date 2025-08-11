@@ -9,7 +9,8 @@ const teamSchema = new mongoose.Schema(
       trim: true,
     },
     teamLeader: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"user",
       required: [true, "Team leader name is required"],
       trim: true,
     },
@@ -20,7 +21,7 @@ const teamSchema = new mongoose.Schema(
 
     field : {
       type : String,
-      enum : ["Web Dev" , "Graphics" , "Marketing"],
+      enum : ["Web Development" , "Graphicn Designing" , "Digital Marketing",],
       required : true
     }
 

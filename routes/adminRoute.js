@@ -3,7 +3,7 @@ const router = express.Router();
 const postController = require("../controllers/postcontroller");
 const upload = require("../config/multerconfig");
 const PMcontroller = require("../controllers/PMcontroller");
-const {TeamController} = require("../controllers/teamcontroller");
+const { TeamController } = require("../controllers/teamcontroller");
 const validate = require("../middlewares/FormValidator")
 const { TeamSchema } = require("../validators/teamvalidations");
 
@@ -21,10 +21,8 @@ router.delete("/pm/:id", PMcontroller.deletePM)
 
 
 router.get("/team", TeamController.teamGet)
-router.post("/createteam", validate(TeamSchema) ,TeamController.createteamPost)
-
-
+router.post("/createteam", validate(TeamSchema), TeamController.createteamPost)
 router.delete("/team/:id", TeamController.deleteteam);
 router.put("/team/:id", TeamController.updateteam);
-
+router.get("/team/fields", TeamController.fields);
 module.exports = router;
