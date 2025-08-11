@@ -11,7 +11,11 @@ const userSchema = new mongoose.Schema({
     password: String,
     phone: String,
     CNIC: String,
-    course: String,
+    course:{
+        type : String,
+        enum : ["Web Development" , "Graphicn Designing" , "Digital Marketing",],
+        required:true,
+    },
     team:{
         type: mongoose.Schema.Types.ObjectId,
         ref:"team"

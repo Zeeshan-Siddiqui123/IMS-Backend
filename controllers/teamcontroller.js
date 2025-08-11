@@ -34,6 +34,18 @@ TeamController.createteamPost = async (req, res) => {
       console.log(members_id);
       
 
+
+      const leader = await Team.findOne({ teamLeader });
+
+      members_id.forEach(a => {
+        if(leader._id === a){
+          return res.status(400).json({
+            field: "teamName",
+            message: "Team Leader can not be added in members "
+          });
+        }
+      })
+
     const validMembers = await User.find({ _id: { $in: members_id } });
     members_id = validMembers.map(user => user._id);
 
