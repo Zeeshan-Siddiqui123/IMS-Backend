@@ -84,7 +84,7 @@ TeamController.deleteteam = async (req, res) => {
 TeamController.updateteam = async (req,res) =>{
   try {
     const { id } = req.params;
-    const { teamName, teamLeader, members } = req. req.validatedData;
+    const { teamName, teamLeader, members } = req.body;
 
     
     let members_id = Array.isArray(members)
