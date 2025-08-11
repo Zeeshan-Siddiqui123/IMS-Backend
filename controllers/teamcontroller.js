@@ -52,5 +52,37 @@ TeamController.createteamPost = async (req, res) => {
 };
 
 
+TeamController.updateteam = async (req,res) =>{
+  try {
+    const { id } = req.params;
+    const { teamName, teamLeader, members } = req. req.validatedData;
+
+    
+    let members_id = Array.isArray(members)
+      ? members
+      : (members ? [members] : []);
+
+    const validMembers = await User.find({ _id: { $in: members_id } });
+    members_id = validMembers.map(user => user._id);
+
+    const team = await Team.findByIdAndUpdate(id, { teamName, teamLeader, members: members_id,}, { new: true });
+    res.status(200).json({ message: "Team  updated successfully" });
+} catch (error) {
+    res.status(500).json({ message: error.message });
+}
+}
+
+
+TeamController.deleteteam = async (req, res) => {
+  try {
+      const { id } = req.params;
+      await Team.findByIdAndDelete(id);
+      res.status(200).json({ message: "Team deleted successfully" });
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+}
+
+
 
 module.exports = { TeamController }

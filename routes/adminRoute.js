@@ -22,5 +22,7 @@ router.delete("/pm/:id", PMcontroller.deletePM)
 
 router.get("/team", TeamController.teamGet)
 router.post("/createteam", validate(TeamSchema) ,TeamController.createteamPost)
+router.put("/update", validate(TeamSchema) ,TeamController.updateteam)
+router.put("/delete", TeamController.deleteteam)
 
 module.exports = router;
