@@ -8,10 +8,6 @@ const teamSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    // description: {
-    //   type: String,
-    //   default: "",
-    // },
     teamLeader: {
       type: String,
       required: [true, "Team leader name is required"],
@@ -19,7 +15,7 @@ const teamSchema = new mongoose.Schema(
     },
     members: [{
       type: mongoose.Schema.Types.ObjectId,
-        ref:"user"
+      ref:"user"
     }],
 
     field : {
