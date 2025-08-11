@@ -9,7 +9,7 @@ const authController = {};
 authController.signupPost = async (req, res) => {
   try {
    
-    const { bq_id, name, email, password, phone, CNIC, course } = parsed.data
+    const { bq_id, name, email, password, phone, CNIC, course } = req.validatedData
 
     const existingbq_id = await userModel.findOne({ bq_id });
     if (existingbq_id) {

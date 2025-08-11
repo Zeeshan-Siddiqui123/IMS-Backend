@@ -40,7 +40,7 @@ TeamController.createteamPost = async (req, res) => {
       members_id.forEach(a => {
         if(leader._id === a){
           return res.status(400).json({
-            field: "teamName",
+            field: "teamLeader",
             message: "Team Leader can not be added in members "
           });
         }
