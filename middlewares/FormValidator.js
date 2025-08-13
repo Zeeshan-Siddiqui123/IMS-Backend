@@ -11,7 +11,7 @@ module.exports = function validate(schema) {
         });
       }
   
-      // Attach parsed data if you want
+      
       req.validatedData = parsed.data;
       next();
     };

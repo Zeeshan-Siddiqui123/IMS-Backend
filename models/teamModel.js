@@ -8,23 +8,29 @@ const teamSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    teamLeader: {
-      type: String,
-      required: [true, "Team leader name is required"],
-      trim: true,
-    },
-    members: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:"user"
-    }],
-    field : {
-      type : String,
-      enum : ["Web Development" , "Graphicn Designing" , "Digital Marketing",],
-      required : true
-    }
 
+    members: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
+          required: true
+        },
+        role: {
+          type: String,
+          enum: ["Team Leader", "Member"],
+          required: true
+        }
+      }
+    ],
+
+    field: {
+      type: String,
+      enum: ["Web Development", "Graphic Designing", "Digital Marketing"],
+      required: true
+    }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('team', teamSchema);
+module.exports = mongoose.model("team", teamSchema);

@@ -10,4 +10,13 @@ const registerSchema = z.object({
   course: z.string().min(1, 'Course is required'),
 });
 
-module.exports = { registerSchema };
+const updateRegisterSchema = z.object({
+  bq_id: z.string().min(5, 'BQ ID must be at least 5 characters'),
+  name: z.string().min(3, 'Name is too short'),
+  email: z.string().email('Invalid email'),
+  phone: z.string().min(11, 'Phone number must be at least 11 characters'),
+  CNIC: z.string().min(13, 'CNIC must be at least 13 characters'),
+  course: z.string().min(1, 'Course is required'),
+})
+
+module.exports = { registerSchema, updateRegisterSchema };

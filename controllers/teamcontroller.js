@@ -1,60 +1,53 @@
-const Team = require('../models/teamModel')
-const User = require("../models/userModel")
-TeamController = {}
+const Team = require('../models/teamModel');
+const User = require("../models/userModel");
 
+const TeamController = {};
+
+// ✅ Get Teams
 TeamController.teamGet = async (req, res) => {
   try {
-    // const teams = await Team.find()
-    const teams = await Team.find().populate("members", "name")
-    res.json(teams)
+    const teams = await Team.find()
+      .populate("members.user", "name");
+    res.json(teams);
   } catch (error) {
-    res.status(500).json({ message: 'Error Fetching Teams', error })
+    res.status(500).json({ message: 'Error Fetching Teams', error });
   }
-}
+};
 
-
-
+// ✅ Create Team
 TeamController.createteamPost = async (req, res) => {
   try {
-    const { teamName, teamLeader, members } = req.validatedData;
-    console.log(req.validatedData.members);
-    const { field } = req.body;
+    const { teamName, teamLeader, members, field } = req.validatedData;
 
+    // Check if team name already exists
     const existingTeam = await Team.findOne({ teamName });
     if (existingTeam) {
       return res.status(400).json({
         field: "teamName",
-        message: "This name is already taken, please try another"
+        message: "This name is already taken, please try another",
       });
     }
 
-    let members_id = Array.isArray(members)
-      ? members
-      : (members ? [members] : []);
-      console.log(members_id);
-      
+    // Check if team leader exists
+    const leaderDoc = await User.findById(teamLeader);
+    if (!leaderDoc) {
+      return res.status(400).json({
+        field: "teamLeader",
+        message: "Invalid team leader ID",
+      });
+    }
 
-
-      const leader = await Team.findOne({ teamLeader });
-
-      members_id.forEach(a => {
-        if(leader._id === a){
-          return res.status(400).json({
-            field: "teamLeader",
-            message: "Team Leader can not be added in members "
-          });
-        }
-      })
-
+    // Validate members
+    let members_id = Array.isArray(members) ? members : [];
     const validMembers = await User.find({ _id: { $in: members_id } });
-    members_id = validMembers.map(user => user._id);
+    members_id = validMembers.map((user) => user._id);
 
-
+    // Create team
     await Team.create({
       teamName,
       teamLeader,
       members: members_id,
-      field
+      field,
     });
 
     return res.status(200).json({ message: "Team created successfully" });
@@ -64,42 +57,40 @@ TeamController.createteamPost = async (req, res) => {
   }
 };
 
-TeamController.fields = async (req, res) => {
-  const fieldEnumValues = Team.schema.path("field").enumValues;
-    res.json(fieldEnumValues);
-}
 
-TeamController.updateteam = async (req,res) =>{
+// ✅ Update Team
+TeamController.updateteam = async (req, res) => {
   try {
     const { id } = req.params;
-    const { teamName, teamLeader, members } = req.body;
+    const { teamName, members, field } = req.body;
 
-    
-    let members_id = Array.isArray(members)
-      ? members
-      : (members ? [members] : []);
+    const leaderCount = members.filter(m => m.role === "Team Leader").length;
+    if (leaderCount !== 1) {
+      return res.status(400).json({ message: "There must be exactly one Team Leader" });
+    }
 
-    const validMembers = await User.find({ _id: { $in: members_id } });
-    members_id = validMembers.map(user => user._id);
+    const userIds = members.map(m => m.user);
+    const validUsers = await User.find({ _id: { $in: userIds } });
+    if (validUsers.length !== userIds.length) {
+      return res.status(400).json({ message: "Invalid user IDs in members" });
+    }
 
-    const team = await Team.findByIdAndUpdate(id, { teamName, teamLeader, members: members_id,}, { new: true });
-    res.status(200).json({ message: "Team  updated successfully" });
-} catch (error) {
+    await Team.findByIdAndUpdate(id, { teamName, members, field }, { new: true });
+    res.status(200).json({ message: "Team updated successfully" });
+  } catch (error) {
     res.status(500).json({ message: error.message });
-}
-}
+  }
+};
 
-
+// ✅ Delete Team
 TeamController.deleteteam = async (req, res) => {
   try {
-      const { id } = req.params;
-      await Team.findByIdAndDelete(id);
-      res.status(200).json({ message: "Team deleted successfully" });
+    const { id } = req.params;
+    await Team.findByIdAndDelete(id);
+    res.status(200).json({ message: "Team deleted successfully" });
   } catch (error) {
-      res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
-
-
-module.exports = { TeamController }
+module.exports = { TeamController };
